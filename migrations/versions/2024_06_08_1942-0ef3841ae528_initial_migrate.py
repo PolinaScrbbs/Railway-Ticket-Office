@@ -1,8 +1,8 @@
 """Initial Migrate
 
-Revision ID: 47dc92a1f04a
+Revision ID: 0ef3841ae528
 Revises: 
-Create Date: 2024-06-06 20:18:56.462501
+Create Date: 2024-06-08 19:42:58.774186
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '47dc92a1f04a'
+revision: str = '0ef3841ae528'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,7 +36,7 @@ def upgrade() -> None:
     sa.Column('seat_number', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('transports',
+    op.create_table('train',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('number', sa.CHAR(length=3), nullable=False),
     sa.Column('type', sa.Enum('TRAIN', 'ELECTRIC_TRAIN', name='traintype'), nullable=False),
@@ -47,7 +47,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('train_id', sa.Integer(), nullable=False),
     sa.Column('type', sa.Enum('RESERVED_SEAT', 'COMPARTMENT', 'FC', 'LUXURY', 'SEDENTARY', name='carriagetype'), nullable=False),
-    sa.ForeignKeyConstraint(['train_id'], ['transports.id'], ),
+    sa.ForeignKeyConstraint(['train_id'], ['train.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('carriage_seat_association',
@@ -66,14 +66,14 @@ def upgrade() -> None:
     )
     op.create_table('flights',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('where_from', sa.Integer(), nullable=False),
-    sa.Column('where', sa.Integer(), nullable=False),
+    sa.Column('where_from_id', sa.Integer(), nullable=False),
+    sa.Column('where_to_id', sa.Integer(), nullable=False),
     sa.Column('train_id', sa.Integer(), nullable=False),
     sa.Column('departure_time', sa.DateTime(), nullable=False),
     sa.Column('arrival_time', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['train_id'], ['transports.id'], ),
-    sa.ForeignKeyConstraint(['where'], ['locations.id'], ),
-    sa.ForeignKeyConstraint(['where_from'], ['locations.id'], ),
+    sa.ForeignKeyConstraint(['train_id'], ['train.id'], ),
+    sa.ForeignKeyConstraint(['where_from_id'], ['locations.id'], ),
+    sa.ForeignKeyConstraint(['where_to_id'], ['locations.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('train_id')
     )
@@ -109,7 +109,7 @@ def downgrade() -> None:
     op.drop_table('locations')
     op.drop_table('carriage_seat_association')
     op.drop_table('carriages')
-    op.drop_table('transports')
+    op.drop_table('train')
     op.drop_table('seats')
     op.drop_table('users')
     # ### end Alembic commands ###

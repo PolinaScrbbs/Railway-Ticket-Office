@@ -21,9 +21,9 @@ class Ticket(Base):
     price = Column(Numeric(10, 2), nullable=False)
     is_round_trip = Column(Boolean, default=False, nullable=False) # В оба конца?
 
-    flight = relationship('Flight', back_populates='tickets')
-    seat = relationship('Seat', back_populates='ticket')
-    reservation = relationship('Reservation', uselist=False, back_populates='ticket')
+    # flight = relationship('Flight', back_populates='tickets')
+    # seat = relationship('Seat', back_populates='ticket')
+    # reservation = relationship('Reservation', uselist=False, back_populates='ticket')
 
 # Модель броней
 class Reservation(Base):
@@ -38,6 +38,6 @@ class Reservation(Base):
     user = relationship('User', back_populates='reservations')
 
 
-User.reservations = relationship('Reservation', order_by=Reservation.id, back_populates='user')
-Flight.tickets = relationship('Ticket', order_by=Ticket.id, back_populates='flight')
-Seat.ticket = relationship('Ticket', uselist=False, back_populates='seat')
+# User.reservations = relationship('Reservation', order_by=Reservation.id, back_populates='user')
+# Flight.tickets = relationship('Ticket', order_by=Ticket.id, back_populates='flight')
+# Seat.ticket = relationship('Ticket', uselist=False, back_populates='seat')

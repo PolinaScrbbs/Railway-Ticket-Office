@@ -4,6 +4,8 @@ from enum import Enum as BaseEnum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+from models.flight.models import Flight
+
 Base = declarative_base()
 
 class TrainType(BaseEnum):
@@ -19,6 +21,12 @@ class Train(Base):
     type = Column(Enum(TrainType), nullable=False)
 
     carriages = relationship('Carriage', back_populates='train')
+
+    # # Обратная связь с рейсами, отправляющимися из этого поезда
+    # from_flights = relationship(Flight, back_populates='train', foreign_keys=[Flight.train_id])
+
+    # # Обратная связь с рейсами, прибывающими на этот поезд
+    # to_flights = relationship(Flight, back_populates='train', foreign_keys=[Flight.train_id])
 
     def carriage_number(self):
         return len(self.carriages)
@@ -49,8 +57,8 @@ class Carriage(Base):
     train_id = Column(Integer, ForeignKey(Train.id), nullable=False)
     type = Column(Enum(CarriageType), nullable=False)
 
-    train = relationship('Train', back_populates='carriages')
-    seats = relationship('Seat', secondary=carriage_seat_association, back_populates='carriages')
+    # train = relationship('Train', back_populates='carriages')
+    # seats = relationship('Seat', secondary=carriage_seat_association, back_populates='carriages')
 
 # Модель места в вагоне
 class Seat(Base):
@@ -59,5 +67,5 @@ class Seat(Base):
     id = Column(Integer, primary_key=True)
     seat_number = Column(String, nullable=False)
 
-    carriages = relationship('Carriage', secondary=carriage_seat_association, back_populates='seats')
+    # carriages = relationship('Carriage', secondary=carriage_seat_association, back_populates='seats')
     
