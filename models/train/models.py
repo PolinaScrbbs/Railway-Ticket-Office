@@ -12,7 +12,7 @@ class TrainType(BaseEnum):
 
 # Модель поездов
 class Train(Base):
-    __tablename__ = 'transports'
+    __tablename__ = 'train'
 
     id = Column(Integer, primary_key=True)
     number = Column(CHAR(3), unique=True, nullable=False)
