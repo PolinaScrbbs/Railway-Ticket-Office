@@ -1,9 +1,11 @@
 import bcrypt
-from sqlalchemy import Column, Integer, String, Enum, DateTime, ForeignKey, Numeric, Boolean, CHAR, Table
+from sqlalchemy import VARCHAR, Column, Integer, String, Enum, DateTime, ForeignKey, Numeric, Boolean, CHAR, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from enum import Enum as BaseEnum
 from datetime import datetime, timedelta, timezone
+
+from app.database import get_session
 
 Base = declarative_base()
 
@@ -17,7 +19,7 @@ class Location(Base):
     __tablename__ = 'locations'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String(30), unique=True, nullable=False)
+    title = Column(String(50), unique=True, nullable=False)
     type = Column(Enum(LocationType), nullable=False)
 
     from_flights = relationship('Flight', back_populates='from_location', foreign_keys='Flight.where_from_id')
@@ -78,13 +80,13 @@ class CarriageType(BaseEnum):
     LUXURY = "Люкс"
     SEDENTARY = "Сидячий"
 
-# Таблица для связи вагонов и мест
-carriage_seat_association = Table(
-    'carriage_seat_association',
-    Base.metadata,
-    Column('carriage_id', Integer, ForeignKey('carriages.id'), primary_key=True),
-    Column('seat_id', Integer, ForeignKey('seats.id'), primary_key=True)
-)
+# # Таблица для связи вагонов и мест
+# carriage_seat_association = Table(
+#     'carriage_seat_association',
+#     Base.metadata,
+#     Column('carriage_id', Integer, ForeignKey('carriages.id')),
+#     Column('seat_id', Integer, ForeignKey('seats.id'))
+# )
 
 # Модель вагонов
 class Carriage(Base):
@@ -92,20 +94,25 @@ class Carriage(Base):
 
     id = Column(Integer, primary_key=True)
     train_id = Column(Integer, ForeignKey(Train.id), nullable=False)
+    number = Column(VARCHAR(2), nullable=False)
     type = Column(Enum(CarriageType), nullable=False)
 
     train = relationship('Train', back_populates='carriages')
-    seats = relationship('Seat', secondary=carriage_seat_association, back_populates='carriages')
+    seats = relationship('Seat', back_populates='carriage')
+    
+    def get_type(self):
+        return self.type.value
 
 # Модель мест в вагонах
 class Seat(Base):
     __tablename__ = 'seats'
 
     id = Column(Integer, primary_key=True)
-    number = Column(String, nullable=False)
+    carriage_id = Column(Integer, ForeignKey(Carriage.id), nullable=False)
+    number = Column(VARCHAR(3), nullable=False)
 
     tickets = relationship('Ticket', back_populates='seat')
-    carriages = relationship('Carriage', secondary=carriage_seat_association, back_populates='seats')
+    carriage = relationship("Carriage", back_populates="seats", foreign_keys=[carriage_id])
 
 # Определение ролей с помощью перечислений
 class Role(BaseEnum):

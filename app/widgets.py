@@ -123,9 +123,11 @@ class MainWindow:
                     
     def create_tickets_tree(self, tab):
 
-        self.ticket_tree = Treeview(tab, columns=("ID", "Flight", "Seat", "Price", "Is Round Trip"), show="headings")
+        self.ticket_tree = Treeview(tab, columns=("ID", "Flight", "Carriage", "CarriageType", "Seat", "Price", "Is Round Trip"), show="headings")
         self.ticket_tree.heading("ID", text="", anchor="center")
         self.ticket_tree.heading("Flight", text="Рейс")
+        self.ticket_tree.heading("Carriage", text="Вагон")
+        self.ticket_tree.heading("CarriageType", text="Тип вагона")
         self.ticket_tree.heading("Seat", text="Номер места")
         self.ticket_tree.heading("Price", text="Цена")
         self.ticket_tree.heading("Is Round Trip", text="В оба конца")
@@ -146,6 +148,8 @@ class MainWindow:
             self.ticket_tree.insert("", "end", values=(
                 ticket.id,
                 ticket.flight.direction,
+                ticket.seat.carriage.number,
+                ticket.seat.carriage.get_type(),
                 ticket.seat.number,
                 f"{ticket.price}₽",
                 "Да" if ticket.is_round_trip else "Нет",
