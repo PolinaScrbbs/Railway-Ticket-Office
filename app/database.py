@@ -1,8 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
-from models.train.models import Train, TrainType
-
 from .config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 
 

@@ -1,16 +1,19 @@
 import tkinter as tk
-from tkinter.ttk import Notebook, Frame, Label
+from tkinter.ttk import Notebook, Frame, Label, Style, Treeview
 
 from app.database import get_session
+from models.flight.models import Flight
 from models.flight.utils import get_all_flights
+from models.reservation.models import Ticket
 from models.user.models import Role
 from .windows.profile import ProfileWindow
 
 class MainWindow:
     def __init__(self, user):
         self.user = user
-        self.flights = get_all_flights(get_session())
-    
+        self.session = get_session()
+        self.flights = get_all_flights(self.session)
+
         self.root = tk.Tk()
         self.root.title("Главное окно")
 
@@ -22,9 +25,33 @@ class MainWindow:
         tab_control.add(self.main_tab, text="Главная")
         tab_control.add(self.profile_tab, text="Профиль")
 
+        # Создаем таблицу для отображения рейсов
+        tree = Treeview(self.main_tab, columns=("From", "To", "Train Number", "Departure Time", "Arrival Time"), show="headings")
+        tree.heading("From", text="Откуда")
+        tree.heading("To", text="Куда")
+        tree.heading("Train Number", text="Номер поезда")
+        tree.heading("Departure Time", text="Начало рейса")
+        tree.heading("Arrival Time", text="Прибытие в пункт назначения")
+        tree.pack(fill="both", expand=True)
+
+        style = Style()
+        style.configure("Treeview", font=("Arial", 10), rowheight=30)
+        style.configure("Treeview.Heading", font=("Arial", 12, "bold"))
+
+        # Применяем стиль к конкретным столбцам таблицы
+        for column in tree["columns"]:
+            tree.column(column, anchor="center", width=150)  # Горизонтальное выравнивание по центру и установка ширины
+
         for flight in self.flights:
-            lb = Label(self.main_tab, text=f"Откуда: {flight.from_location.title}, Куда: {flight.to_location.title}, Номер поезда: {flight.train.number}")
-            lb.grid(column=0, row=0)
+            tree.insert("", "end", values=(
+                flight.from_location.title,
+                flight.to_location.title,
+                flight.train.number,
+                flight.departure_time,
+                flight.arrival_time
+            ))
+
+        # tree.bind("<<TreeviewSelect>>", self.tikets())
 
         self.profile(user)
 
@@ -32,22 +59,16 @@ class MainWindow:
 
     def profile(self, user):
         full_name = self.user.full_name()
-        full_name = Label(self.profile_tab, text=f"ФИО : {full_name}")
-        full_name.grid(column=0, row=0)
+        full_name_label = Label(self.profile_tab, text=f"ФИО: {full_name}")
+        full_name_label.grid(column=0, row=0)
 
         role = "Администратор" if user.role == Role.ADMIN else "Пользователь"
-        role = Label(self.profile_tab, text=f"Роль: {role}")
-        role.grid(column=0, row=1)
+        role_label = Label(self.profile_tab, text=f"Роль: {role}")
+        role_label.grid(column=0, row=1)
 
-    def switch_to_profile(self):
-        self.tab1.grid_remove()  # Убираем отображение первой вкладки
-        self.profile_window = ProfileWindow(self.tab2, self.user)  # Создаем ProfileWindow на второй вкладке
-        self.profile_window.run()
-
-    def switch_to_main(self):
-        if hasattr(self, 'profile_window'):  # Проверяем, существует ли атрибут profile_window
-            self.profile_window.close()  # Закрываем ProfileWindow, если оно открыто
-        self.tab1.grid()  # Отображаем первую вкладку
+    # def tikets(self):
+    #     tree = Treeview(self.main_tab, columns=("Flight", "Seat", "Price", "Is Round Trip"), name="headings", show="headings")
 
     def run(self):
         self.root.mainloop()
+        self.session.close()  # Закрываем сессию после завершения работы GUI

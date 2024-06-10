@@ -1,11 +1,9 @@
-from .models import Flight
-from ..train.models import Train
+from .models import Flight, Train
+from sqlalchemy.orm import joinedload
 
 def get_all_flights(session):
-    # Получаем все рейсы и возвращаем их в виде списка
-    flights = session.query(Flight).all()
-
-    # Закрываем сессию
-    session.close()
-
-    return flights
+    return session.query(Flight).options(
+        joinedload(Flight.from_location),
+        joinedload(Flight.to_location),
+        joinedload(Flight.train)
+    ).all()

@@ -7,7 +7,6 @@ from alembic import context
 
 from app.config import DATABASE_URL
 from models.user.models import Base as UserBase
-from models.train.models import Base as TrainBase
 from models.flight.models import Base as FlightBase
 from models.reservation.models import Base as ReservationBase
 
@@ -29,7 +28,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = [
-    UserBase.metadata, TrainBase.metadata, 
+    UserBase.metadata,
     FlightBase.metadata, ReservationBase.metadata
 ]
 

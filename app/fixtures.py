@@ -1,5 +1,4 @@
-from models.flight.models import Location
-from models.train.models import Train, TrainType
+from models.flight.models import Train, TrainType, Location
 from models.user.models import User, Role
 
 fixtures_data = {
