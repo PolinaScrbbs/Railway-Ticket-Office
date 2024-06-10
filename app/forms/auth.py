@@ -4,7 +4,7 @@ from tkinter import messagebox
 from app.widgets import MainWindow
 
 from ..database import get_session
-from models.user.utils import register_user, authenticate_user
+from ..models.utils import register_user, authenticate_user
 
 class RegistrationWindow:
     def __init__(self):
