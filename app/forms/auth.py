@@ -103,7 +103,7 @@ class LoginWindow:
         user = authenticate_user(session, login, password)
 
         if user:
-            messagebox.showinfo("Успешная авторизация", f"Добро пожаловать, {user.full_name()}!")
+            messagebox.showinfo("Успешная авторизация", f"Добро пожаловать, {user.full_name}!")
             # Закрываем окно авторизации
             self.root.destroy()
             main_window = MainWindow(user)

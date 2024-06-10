@@ -126,6 +126,7 @@ class User(Base):
 
     reservations = relationship('Reservation', back_populates='user')
 
+    @property
     def full_name(self):
         return f'{self.name} {self.surname} {self.patronymic}'
 
@@ -153,6 +154,12 @@ class Ticket(Base):
     flight = relationship('Flight', back_populates='tickets')
     seat = relationship('Seat', back_populates='tickets')
     reservation = relationship('Reservation', uselist=False, back_populates='ticket')
+
+    @property
+    def ticket_number(self):
+        ticket_id = self.id
+        formatted_id = f"{ticket_id:08}"
+        return formatted_id
 
 # Модель броней
 class Reservation(Base):

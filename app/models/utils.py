@@ -1,5 +1,6 @@
-from .models import Flight, Ticket
+from .models import Flight, Reservation, Ticket
 from sqlalchemy.orm import joinedload
+from sqlalchemy import not_
 
 from .models import User
 from sqlalchemy.orm import Session
@@ -35,3 +36,20 @@ def get_flight_tickets(session, flight_id):
         joinedload(Ticket.flight),
         joinedload(Ticket.seat)
     ).filter_by(flight_id=flight_id).all()
+
+def get_available_tickets(session, flight_id):
+    all_tickets = get_flight_tickets(session, flight_id)
+    reserved_ticket_ids = [reservation.ticket_id for reservation in session.query(Reservation).all()]
+    available_tickets = [ticket for ticket in all_tickets if ticket.id not in reserved_ticket_ids]
+
+    return available_tickets
+
+def create_reservation(session, ticket_id, user_id):
+    reservation = Reservation(ticket_id=ticket_id, user_id=user_id)
+
+    session.add(reservation)
+    session.commit()
+
+def get_user_reservations(session, user_id):
+    user_reservations = session.query(Reservation).filter(Reservation.user_id == user_id).all()
+    return user_reservations
