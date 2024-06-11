@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from .models import Flight, Reservation, Ticket
 from sqlalchemy.orm import joinedload
 from sqlalchemy import not_
@@ -49,6 +50,12 @@ def create_reservation(session, ticket_id, user_id):
 
     session.add(reservation)
     session.commit()
+
+def get_reservations(session):
+    one_month_ago = datetime.now() - timedelta(days=30)
+
+    reservations = session.query(Reservation).filter(Reservation.date >= one_month_ago).all()
+    return reservations
 
 def get_user_reservations(session, user_id):
     user_reservations = session.query(Reservation).filter(Reservation.user_id == user_id).all()

@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import Button
 from tkinter import messagebox
-from tkinter.ttk import Notebook, Frame, Style, Treeview, Button as ttkButton
+from tkinter.ttk import Notebook, Frame, Style, Treeview
 from tkinter.font import Font
 
 from app.database import get_session
-from .models.utils import create_reservation, get_all_flights, get_available_tickets, get_user_reservations
+from .models.utils import create_reservation, get_all_flights, get_available_tickets, get_reservations, get_user_reservations
 from .models.models import Role
 
 class MainWindow:
@@ -32,7 +32,10 @@ class MainWindow:
         self.session = get_session()
         self.user = user
         self.flights = get_all_flights(self.session)
-        self.user_reservation = get_user_reservations(self.session, user.id)
+        if self.user.role == Role.ADMIN:
+            self.reservation = get_reservations(self.session)
+        else:
+            self.reservation = get_user_reservations(self.session, user.id)
 
         self.root = tk.Tk()
         self.root.title("Главное окно")
@@ -156,7 +159,7 @@ class MainWindow:
             ))
 
     def create_reservation_tree(self, tab):
-        if self.user_reservation == []:
+        if self.reservation == []:
             lb = tk.Label(self.reservation_tab, text=f"Брони отсутствуют", font=self.bold_font)
             lb.grid(column=0, row=0)
 
@@ -173,7 +176,7 @@ class MainWindow:
             self.completion_reservation_tree()
             
     def completion_reservation_tree(self):
-        for reservation in self.user_reservation:
+        for reservation in self.reservation:
             self.reservation_tree.insert("", "end", values=(
                 reservation.id,
                 reservation.ticket.ticket_number,
