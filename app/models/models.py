@@ -5,8 +5,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from enum import Enum as BaseEnum
 from datetime import datetime, timedelta, timezone
 
-from app.database import get_session
-
 Base = declarative_base()
 
 # Enum для типа локаций
@@ -67,10 +65,6 @@ class Flight(Base):
     @property
     def direction(self):
         return f"{self.from_location.title} - {self.to_location.title}"
-    
-    @property
-    def travel_time(self):
-        return f"{self.departure_time} - {self.arrival_time}"
 
 # Enum для типа вагонов
 class CarriageType(BaseEnum):

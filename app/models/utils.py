@@ -60,3 +60,6 @@ def get_reservations(session):
 def get_user_reservations(session, user_id):
     user_reservations = session.query(Reservation).filter(Reservation.user_id == user_id).all()
     return user_reservations
+
+def formatted_time(time):
+    return time.strftime("%d-%m-%Y %H:%M")

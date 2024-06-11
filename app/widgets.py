@@ -5,7 +5,9 @@ from tkinter.ttk import Notebook, Frame, Style, Treeview
 from tkinter.font import Font
 
 from app.database import get_session
-from .models.utils import create_reservation, get_all_flights, get_available_tickets, get_reservations, get_user_reservations
+from .models.utils import (
+    create_reservation, formatted_time, get_all_flights, get_available_tickets, 
+    get_reservations, get_user_reservations)
 from .models.models import Role
 
 class MainWindow:
@@ -108,7 +110,7 @@ class MainWindow:
                 flight.id,
                 flight.direction,
                 flight.train.number,
-                flight.travel_time
+                f"{formatted_time(flight.departure_time)} - {formatted_time(flight.arrival_time)}"
             ))
 
     def select_ticket(self, event):
@@ -181,7 +183,7 @@ class MainWindow:
                 reservation.id,
                 reservation.ticket.ticket_number,
                 reservation.user.full_name,
-                reservation.date
+                formatted_time(reservation.date)
             ))
 
     def run(self):
