@@ -40,14 +40,17 @@ class MainWindow:
             self.reservation = get_user_reservations(self.session, user.id)
 
         self.root = tk.Tk()
-        self.root.title("Главное окно")
+        self.root.title("Железнодорожная касса")
+        self.root.geometry('1100x700')
+        self.root.anchor("center")
+        self.root.configure(bg="white")
 
         self.tab_control = Notebook(self.root)
         self.main_tab = Frame(self.tab_control)
         self.reservation_tab = Frame(self.tab_control)
         self.profile_tab = Frame(self.tab_control)
 
-        self.tab_control.add(self.main_tab, text="Главная")
+        self.tab_control.add(self.main_tab, text="Рейсы")
         self.tab_control.add(self.reservation_tab, text="Брони")
         self.tab_control.add(self.profile_tab, text="Профиль")
         self.tab_control.pack(expand=1, fill="both")
@@ -66,12 +69,19 @@ class MainWindow:
         self.__init__(self.user)
 
     def profile(self, user):
+        # Получение полного имени пользователя
         full_name = self.user.full_name
-        full_name_label = tk.Label(self.profile_tab, text=f"ФИО: {full_name}")
-        full_name_label.grid(column=0, row=0)
+        
+        # Создание метки для отображения полного имени пользователя
+        full_name_label = tk.Label(self.profile_tab, text=f"ФИО: {full_name}", font=("Arial", 12))
+        full_name_label.grid(column=0, row=0, padx=10, pady=5, sticky="w")
+
+        # Определение роли пользователя
         role = "Администратор" if user.role == Role.ADMIN else "Пользователь"
-        role_label = tk.Label(self.profile_tab, text=f"Роль: {role}")
-        role_label.grid(column=0, row=1)
+        
+        # Создание метки для отображения роли пользователя
+        role_label = tk.Label(self.profile_tab, text=f"Роль: {role}", font=("Arial", 12))
+        role_label.grid(column=0, row=1, padx=10, pady=5, sticky="w")
 
     def add_style(self, tree):
         tree.configure(style="Treeview")
@@ -119,7 +129,7 @@ class MainWindow:
             selected_item = selected_items[0]
             item_values = event.widget.item(selected_item, "values")
 
-            confirmation_message = f"Вы хотите забронировать билет {item_values[2]} на направление {item_values[1]}?"
+            confirmation_message = f"Вы хотите забронировать билет: Вагон {item_values[2]}({item_values[3]}), Место {item_values[4]}, {item_values[1]}?"
             user_response = messagebox.askyesno("Подтверждение бронирования", confirmation_message)
 
             if user_response:
