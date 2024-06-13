@@ -142,7 +142,7 @@ class MainWindow:
         self.ticket_tree.heading("ID", text="", anchor="center")
         self.ticket_tree.heading("Flight", text="Рейс")
         self.ticket_tree.heading("Carriage", text="Вагон")
-        self.ticket_tree.heading("CarriageType", text="Тип вагона")
+        self.ticket_tree.heading("CarriageType", text="Тип вагона", command=self.sort_by_carriage_type)
         self.ticket_tree.heading("Seat", text="Номер места")
         self.ticket_tree.heading("Price", text="Цена")
         self.ticket_tree.heading("Is Round Trip", text="В оба конца")
@@ -169,6 +169,13 @@ class MainWindow:
                 f"{ticket.price}₽",
                 "Да" if ticket.is_round_trip else "Нет",
             ))
+
+    def sort_by_carriage_type(self):
+        data = [(self.ticket_tree.set(child, "CarriageType"), child) for child in self.ticket_tree.get_children("")]
+        self.sort_descending = not getattr(self, 'sort_descending', False)
+        data.sort(reverse=self.sort_descending)
+        for index, (val, child) in enumerate(data):
+            self.ticket_tree.move(child, '', index)
 
     def create_reservation_tree(self, tab):
         if self.reservation == []:
